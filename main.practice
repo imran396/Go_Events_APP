@@ -1,0 +1,70 @@
+package main
+
+import (
+	"database/sql"
+	"fmt"
+	"strings"
+
+	"log"
+
+	_ "github.com/go-sql-driver/mysql"
+)
+
+
+func main() {
+db, err := sql.Open("mysql", "root:i@/goDev")
+if err != nil {
+    panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
+}
+defer db.Close()
+
+// Open doesn't open a connection. Validate DSN data:
+err = db.Ping()
+if err != nil {
+    panic(err.Error()) // proper error handling instead of panic in your app
+}
+
+tableQuery :=`CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY, -- Unique identifier
+    username VARCHAR(50) NOT NULL,     -- Username, maximum 50 characters
+    email VARCHAR(100) UNIQUE NOT NULL, -- Email, must be unique
+    password_hash VARCHAR(255) NOT NULL, -- Password hash for authentication
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Record creation time
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- Record update time
+);`
+
+_, er := db.Exec(tableQuery)
+
+if er != nil {
+    panic(err.Error()) // proper error handling instead of panic in your app
+}
+
+	stmtIns, err := db.Prepare("INSERT INTO users VALUES( ?, ?, ?, ?, ?, ? )") // ? = placeholder
+	if err != nil {
+		panic(err.Error()) // proper error handling instead of panic in your app
+	}
+	defer stmtIns.Close() // Close the statement when we leave main() / the program terminates
+
+	q := `Select id, username from users`
+	
+	rows, err := db.Query(q)
+	
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	data := make([] string, 0)
+	
+	for rows.Next() {
+		var username string;
+		var id string;
+
+		if err := rows.Scan(&id, &username); err != nil {
+			log.Fatal(err)
+		}
+
+		data = append(data, username)
+	}
+
+	fmt.Println(strings.Join(data, " "))
+}	
