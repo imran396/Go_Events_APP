@@ -2,11 +2,11 @@ package validators
 
 import (
 	"fmt"
-	"web/model"
+	"web/models"
 	"github.com/go-playground/validator/v10"
 )
 
-func  ValidateUser(user model.User) (map[string]interface{}, error) {
+func  ValidateUser(user models.User) (map[string]interface{}, error) {
 	validate := validator.New(validator.WithRequiredStructEnabled())
 	err := validate.Struct(user)
 	var jsonResponse map[string]interface{}

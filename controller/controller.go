@@ -3,19 +3,19 @@ package controller
 import (
 	"net/http"
 	"strconv"
-	"web/model"
+	"web/models"
 	"web/validators"
 	"github.com/gin-gonic/gin"
 )
 
 func UserSaveHandler (c *gin.Context) {
-	var userInput model.User
+	var userInput models.User
 	if err := c.ShouldBindJSON(&userInput); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 	
-	user := model.User {
+	user := models.User {
 		Username:userInput.Username,
 		Email: userInput.Email,
 		Password: userInput.Password,
@@ -33,13 +33,13 @@ func UserSaveHandler (c *gin.Context) {
 }
 
 func UserUpdateHandler (c *gin.Context) {
-	var userInput model.User
+	var userInput models.User
 	if err := c.ShouldBindJSON(&userInput); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 	id, _ :=  strconv.ParseInt(c.Param("id"), 10, 8)
-	user := model.FindUserByID(id)
+	user := models.FindUserByID(id)
 	
 	if checkUser(user) {
 		c.JSON(http.StatusNotFound, gin.H{
@@ -64,13 +64,13 @@ func UserUpdateHandler (c *gin.Context) {
 	})
 }
 
-func checkUser(user model.User) bool{
-	return user == model.User{}
+func checkUser(user models.User) bool{
+	return user == models.User{}
 }
 
 func UserDeleteHandler (c *gin.Context) {
 	id, _ :=  strconv.ParseInt(c.Param("id"), 10, 8)
-	user := model.FindUserByID(id)
+	user := models.FindUserByID(id)
 	if checkUser(user) {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": "user not found",

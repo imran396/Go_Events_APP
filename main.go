@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"web/db"
-	"web/router"
+	"web/routers"
 )
 
 func init(){
